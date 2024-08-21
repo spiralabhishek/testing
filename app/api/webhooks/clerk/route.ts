@@ -2,7 +2,7 @@ import { clerkClient, WebhookEvent } from "@clerk/nextjs/server";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 import { Webhook } from "svix";
-import { UserModel as User } from "../../users/model";
+import { UserModel } from "../../users/model";
 import { BaseUser } from "@/lib/types/user";
 import { UserType } from "@/lib/types/common";
 
@@ -65,7 +65,7 @@ export async function POST(req: Request) {
 
     try {
       console.log("User created:", user);
-      const newUser = await new User(user).save();
+      const newUser = await UserModel.create(user)
       console.log("User created:", newUser);
 
       await clerkClient.users.updateUserMetadata(id, {
