@@ -1,9 +1,7 @@
-import { clerkClient, WebhookEvent } from "@clerk/nextjs/server";
+import { WebhookEvent } from "@clerk/nextjs/server";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 import { Webhook } from "svix";
-import { UserModel } from "../../users/model";
-import { BaseUser } from "@/lib/types/user";
 import { UserType } from "@/lib/types/common";
 import { createUser } from "../../users/repository";
 
@@ -56,7 +54,7 @@ export async function POST(req: Request) {
     }
 
     const user: any = {
-      type: UserType.Professional,
+      type: UserType.Admin,
       email: email_addresses[0].email_address,
       name: `${first_name} ${last_name}`,
       profilePicture: image_url,
