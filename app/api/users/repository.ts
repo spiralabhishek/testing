@@ -1,8 +1,11 @@
 import { BaseUser, CustomerUser, ProfessionalUser } from "@/lib/types/user";
 
 import { Customer, Professional, UserModel as User } from "./model";
+import dbConnect from "@/lib/mongodb";
+
 
 export const createUser = async (userData: BaseUser) => {
+  await dbConnect()
   const user = new User(userData);
   return await user.save();
 };
