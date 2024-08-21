@@ -22,7 +22,7 @@ async function dbConnect() {
     cached.promise =
         cached.promise ||
         mongoose.connect(MONGODB_URL, {
-            dbName: "clerk-next14-db",
+            dbName: "pro-card",
             bufferCommands: false,
             connectTimeoutMS: 30000,
         });
