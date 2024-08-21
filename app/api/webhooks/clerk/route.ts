@@ -4,6 +4,7 @@ import { NextResponse } from "next/server";
 import { Webhook } from "svix";
 import { createUser } from "../../users/repository";
 import { UserType } from "@/lib/types/common";
+import dbConnect from "@/lib/mongodb";
 
 export async function POST(req: Request) {
   // You can find this in the Clerk Dashboard -> Webhooks -> choose the webhook
@@ -61,16 +62,16 @@ export async function POST(req: Request) {
       evt.data;
 
     const user: any = {
-      type: UserType.Professional,
+      type: UserType.Admin,
       email: email_addresses[0].email_address,
-      name: `${first_name} ${last_name}`,
+      name: username!,
       profilePicture: image_url,
       password: "93rd398fn",
       phone: "74734783478"
     };
 
     console.log(user);
-
+    await dbConnect();
     const newUser = await createUser(user);
 
     if (newUser) {
