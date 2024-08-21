@@ -62,8 +62,9 @@ export async function POST(req: Request) {
       password: "93rd398fn",
       phone: "74734783478"
     };
-    
+
     try {
+      console.log("User created:", user);
       const newUser = await new User(user).save();
       console.log("User created:", newUser);
 
