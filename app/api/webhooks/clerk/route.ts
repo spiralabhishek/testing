@@ -66,7 +66,7 @@ export async function POST(req: Request) {
 
     try {
       console.log("User created:", user);
-      const newUser = await createUser(user);
+      const newUser = await createUser(user).catch(err => console.log(err))
       console.log("User created:", newUser);
 
       // await clerkClient.users.updateUserMetadata(id, {
