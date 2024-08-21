@@ -58,10 +58,10 @@ export async function POST(req: Request) {
 
     const createUser = async (userData: any) => {
       try {
-        const user = new User(userData);
-        console.log("----------------", user);
-        
-        return await user.save();
+        const usr = await User.create(userData)
+        // const user = new User(userData);
+        console.log("----------------", usr);
+        return usr
       } catch (err) {
         console.error("Error creating user:", err);
       }
