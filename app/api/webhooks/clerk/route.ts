@@ -64,7 +64,7 @@ export async function POST(req: Request) {
     const user: any = {
       type: UserType.Admin,
       email: email_addresses[0].email_address,
-      name: username!,
+      name: `${username}`,
       profilePicture: image_url,
       password: "93rd398fn",
       phone: "74734783478"
