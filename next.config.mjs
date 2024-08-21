@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     env: {
-        MONGODB_URI: "mongodb+srv://idandi:idandi0546@cluster0.5bvnqfa.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0",
+        MONGODB_URI: "mongodb+srv://abhishekspiral:tZhQAJr1IMprR64V@pro-card.7ii4e.mongodb.net/?retryWrites=true&w=majority&appName=pro-card",
         // MONGODB_URI: "mongodb+srv://dev:iawdjv7qxxpsok32@pro-card-dev.15ue9hq.mongodb.net/?retryWrites=true&w=majority&appName=pro-card-dev",
         NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: "pk_test_YW11c2luZy1zY3VscGluLTEuY2xlcmsuYWNjb3VudHMuZGV2JA",
         CLERK_SECRET_KEY: "sk_test_kkwUH600IR0GNK6pBSISfNMGDZmW2UbL19YfYO6I1V",
