@@ -48,7 +48,7 @@ export async function POST(req: Request) {
     console.log("==========================================");
     const { id, email_addresses, image_url, first_name, last_name, username } = evt.data;
     const user: any = {
-      type: UserType.Customer,
+      type: UserType.Professional,
       email: email_addresses[0].email_address,
       name: `${first_name} ${last_name}`,
       profilePicture: image_url,
