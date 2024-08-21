@@ -2,8 +2,9 @@ import { clerkClient, WebhookEvent } from "@clerk/nextjs/server";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 import { Webhook } from "svix";
-import { createUser } from "../../users/repository";
 import { BaseUser } from "@/lib/types/user";
+import { UserType } from "@/lib/types/common";
+import { UserModel as User } from "../../users/model";
 
 export async function POST(req: Request) {
   // You can find this in the Clerk Dashboard -> Webhooks -> choose the webhook
@@ -73,8 +74,14 @@ export async function POST(req: Request) {
       photo: image_url,
     };
 
-    const testUser: any = {
-      type: "customer",
+    const createUser = async (userData: any) => {
+      const user = new User(userData);
+      return await user.save();
+    };
+
+    const testUser = {
+      password: "jkh78r2h3b87",
+      type: UserType.Customer,
       name: `Abhishek Antala`,
       profilePicture: image_url,
       phone: "+1234567890",
