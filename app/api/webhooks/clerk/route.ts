@@ -58,10 +58,8 @@ export async function POST(req: Request) {
 
     const createUser = async (userData: any) => {
       try {
-        const usr = await User.create(userData)
-        // const user = new User(userData);
-        console.log("----------------", usr);
-        return usr
+        const user = new User(userData);
+        return await user.save();
       } catch (err) {
         console.error("Error creating user:", err);
       }
@@ -69,8 +67,10 @@ export async function POST(req: Request) {
 
     const newUser = await createUser(user);
     console.log("newUser", "newUser", newUser);
+    console.log("[[[[[[[[[[[[[[[[[");
 
     if (newUser) {
+
       await clerkClient.users.updateUserMetadata(id, {
         publicMetadata: { userId: newUser._id },
       });
