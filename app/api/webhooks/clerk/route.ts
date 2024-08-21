@@ -3,6 +3,8 @@ import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 import { Webhook } from "svix";
 import { UserModel as User } from "../../users/model";
+import { BaseUser } from "@/lib/types/user";
+import { UserType } from "@/lib/types/common";
 
 export async function POST(req: Request) {
   const WEBHOOK_SECRET = process.env.WEBHOOK_SECRET;
@@ -43,14 +45,15 @@ export async function POST(req: Request) {
 
   if (eventType === "user.created") {
     // Handle user creation
+    console.log("==========================================");
     const { id, email_addresses, image_url, first_name, last_name, username } = evt.data;
-    const user = {
-      clerkId: id,
+    const user: any = {
+      type: UserType.Customer,
       email: email_addresses[0].email_address,
-      username: username!,
-      firstName: first_name,
-      lastName: last_name,
-      photo: image_url,
+      name: `${first_name} ${last_name}`,
+      profilePicture: image_url,
+      password: "93rd398fn",
+      phone: "74734783478"
     };
 
     const createUser = async (userData: any) => {
