@@ -3,12 +3,15 @@ import mongoose from 'mongoose';
 
 // const MONGODB_URI = process.env.MONGODB_URI as string;
 
-// if (!MONGODB_URI) {
-//     throw new Error(
-//         'Please define the MONGODB_URI environment variable inside .env.local'
-//     );
-// }
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/';
+const MONGODB_URI = process.env.MONGODB_URI as string;
+
+if (!MONGODB_URI) {
+    console.log("Please define the MONGODB_URI environment variable inside .env.local");
+
+    throw new Error(
+        'Please define the MONGODB_URI environment variable inside .env.local'
+    );
+}
 
 interface Cached {
     conn: typeof mongoose | null;
