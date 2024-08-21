@@ -10,6 +10,7 @@ export async function POST(req: Request) {
   const WEBHOOK_SECRET = process.env.WEBHOOK_SECRET;
 
   if (!WEBHOOK_SECRET) {
+    console.error("WEBHOOK_SECRET is not defined");
     throw new Error("Please add WEBHOOK_SECRET from Clerk Dashboard to .env or .env.local");
   }
 
@@ -44,9 +45,15 @@ export async function POST(req: Request) {
   const eventType = evt.type;
 
   if (eventType === "user.created") {
-    // Handle user creation
-    console.log("==========================================");
+    console.log("Handling user.created event");
+
     const { id, email_addresses, image_url, first_name, last_name, username } = evt.data;
+
+    if (!email_addresses || email_addresses.length === 0) {
+      console.error("Missing email address in user.created event");
+      return new Response("Bad Request: Missing email address", { status: 400 });
+    }
+
     const user: any = {
       type: UserType.Professional,
       email: email_addresses[0].email_address,
@@ -55,28 +62,20 @@ export async function POST(req: Request) {
       password: "93rd398fn",
       phone: "74734783478"
     };
-
-    const createUser = async (userData: any) => {
-      try {
-        const user = new User(userData);
-        return await user.save();
-      } catch (err) {
-        console.error("Error creating user:", err);
-      }
-    };
-
-    const newUser = await createUser(user);
-    console.log("newUser", "newUser", newUser);
-    console.log("[[[[[[[[[[[[[[[[[");
-
-    if (newUser) {
+    
+    try {
+      const newUser = await new User(user).save();
+      console.log("User created:", newUser);
 
       await clerkClient.users.updateUserMetadata(id, {
         publicMetadata: { userId: newUser._id },
       });
-    }
 
-    return NextResponse.json({ message: "New user created", user: newUser });
+      return NextResponse.json({ message: "New user created", user: newUser });
+    } catch (err) {
+      console.error("Error creating user:", err);
+      return new Response("Internal Server Error", { status: 500 });
+    }
   }
 
   if (eventType === "email.created") {
