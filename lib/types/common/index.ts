@@ -74,7 +74,7 @@ export interface TimeRange {
 
 export enum UserType {
     Customer = 'customer',
-    Professional = 'professional',
+    Professional = 'Professional',
     Admin = 'admin'
 }
 
