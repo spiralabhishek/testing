@@ -5,6 +5,7 @@ import { Webhook } from "svix";
 import { UserModel } from "../../users/model";
 import { BaseUser } from "@/lib/types/user";
 import { UserType } from "@/lib/types/common";
+import { createUser } from "../../users/repository";
 
 export async function POST(req: Request) {
   const WEBHOOK_SECRET = process.env.WEBHOOK_SECRET;
@@ -65,7 +66,7 @@ export async function POST(req: Request) {
 
     try {
       console.log("User created:", user);
-      const newUser = await UserModel.create(user)
+      const newUser = await createUser(user);
       console.log("User created:", newUser);
 
       // await clerkClient.users.updateUserMetadata(id, {
