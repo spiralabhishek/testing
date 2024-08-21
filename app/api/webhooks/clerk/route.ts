@@ -2,35 +2,42 @@ import { clerkClient, WebhookEvent } from "@clerk/nextjs/server";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 import { Webhook } from "svix";
-import { UserModel } from "../../users/model";
-import { BaseUser } from "@/lib/types/user";
-import { UserType } from "@/lib/types/common";
 import { createUser } from "../../users/repository";
+import { UserType } from "@/lib/types/common";
 
 export async function POST(req: Request) {
+  // You can find this in the Clerk Dashboard -> Webhooks -> choose the webhook
   const WEBHOOK_SECRET = process.env.WEBHOOK_SECRET;
 
   if (!WEBHOOK_SECRET) {
-    console.error("WEBHOOK_SECRET is not defined");
-    throw new Error("Please add WEBHOOK_SECRET from Clerk Dashboard to .env or .env.local");
+    throw new Error(
+      "Please add WEBHOOK_SECRET from Clerk Dashboard to .env or .env.local"
+    );
   }
 
+  // Get the headers
   const headerPayload = headers();
   const svix_id = headerPayload.get("svix-id");
   const svix_timestamp = headerPayload.get("svix-timestamp");
   const svix_signature = headerPayload.get("svix-signature");
 
+  // If there are no headers, error out
   if (!svix_id || !svix_timestamp || !svix_signature) {
-    return new Response("Error occurred -- no svix headers", { status: 400 });
+    return new Response("Error occured -- no svix headers", {
+      status: 400,
+    });
   }
 
+  // Get the body
   const payload = await req.json();
   const body = JSON.stringify(payload);
 
+  // Create a new Svix instance with your secret.
   const wh = new Webhook(WEBHOOK_SECRET);
 
   let evt: WebhookEvent;
 
+  // Verify the payload with the headers
   try {
     evt = wh.verify(body, {
       "svix-id": svix_id,
@@ -39,21 +46,19 @@ export async function POST(req: Request) {
     }) as WebhookEvent;
   } catch (err) {
     console.error("Error verifying webhook:", err);
-    return new Response("Error occurred", { status: 400 });
+    return new Response("Error occured", {
+      status: 400,
+    });
   }
 
+  // Get the ID and type
   const { id } = evt.data;
   const eventType = evt.type;
 
+  // CREATE User in mongodb
   if (eventType === "user.created") {
-    console.log("Handling user.created event");
-
-    const { id, email_addresses, image_url, first_name, last_name, username } = evt.data;
-
-    if (!email_addresses || email_addresses.length === 0) {
-      console.error("Missing email address in user.created event");
-      return new Response("Bad Request: Missing email address", { status: 400 });
-    }
+    const { id, email_addresses, image_url, first_name, last_name, username } =
+      evt.data;
 
     const user: any = {
       type: UserType.Professional,
@@ -64,36 +69,22 @@ export async function POST(req: Request) {
       phone: "74734783478"
     };
 
-    try {
-      console.log("User created:", user);
-      const newUser = await createUser(user).catch(err => console.log(err))
-      console.log("User created:", newUser);
+    console.log(user);
 
-      // await clerkClient.users.updateUserMetadata(id, {
-      //   publicMetadata: { userId: newUser._id },
-      // });
+    const newUser = await createUser(user);
 
-      return NextResponse.json({ message: "New user created", user: newUser });
-    } catch (err) {
-      console.error("Error creating user:", err);
-      return new Response("Internal Server Error", { status: 500 });
+    if (newUser) {
+      await clerkClient.users.updateUserMetadata(id, {
+        publicMetadata: {
+          userId: newUser._id,
+        },
+      });
     }
+
+    return NextResponse.json({ message: "New user created", user: newUser });
   }
 
-  if (eventType === "email.created") {
-    // Handle email creation
-    const { email_address_id, data, body } = evt.data;
-    console.log(`Email created email_address_id: ${email_address_id}`);
-    console.log(`Email created body: ${body}`);
-    console.log(`Email created data: ${data}`);
-
-    // Implement your logic for handling the email creation event
-    // For example, update user records or perform additional actions based on the new email
-
-    return NextResponse.json({ message: "Email created", email: email_address_id });
-  }
-
-  console.log(`Webhook with ID of ${id} and type of ${eventType}`);
+  console.log(`Webhook with and ID of ${id} and type of ${eventType}`);
   console.log("Webhook body:", body);
 
   return new Response("", { status: 200 });
