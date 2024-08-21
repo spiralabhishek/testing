@@ -75,8 +75,12 @@ export async function POST(req: Request) {
     };
 
     const createUser = async (userData: any) => {
-      const user = new User(userData);
-      return await user.save();
+      try {
+        const user = new User(userData);
+        return await user.save();
+      } catch (err) {
+        console.log("ppppppppppppp", err);
+      }
     };
 
     const testUser = {
