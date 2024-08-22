@@ -58,6 +58,8 @@ export async function POST(req: Request) {
 
   // CREATE User in mongodb
   if (eventType === "user.created") {
+    console.log("user.created");
+
     const { id, email_addresses, image_url, first_name, last_name } =
       evt.data;
 
@@ -86,7 +88,7 @@ export async function POST(req: Request) {
     const { email_addresses, image_url, first_name, last_name } =
       evt.data;
 
-    console.log(email_addresses, image_url, first_name, last_name);
+    console.log("user.updated");
     const { userId } = auth();
     if (userId) {
       const clerkUser = await clerkClient.users.getUser(userId);
@@ -103,6 +105,8 @@ export async function POST(req: Request) {
     return NextResponse.json({ message: "Action not match" });
   }
   if (eventType === "user.deleted") {
+    console.log("user.deleted");
+
     const { userId } = auth();
     if (userId) {
       const clerkUser = await clerkClient.users.getUser(userId);
