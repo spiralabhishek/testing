@@ -58,8 +58,6 @@ export async function POST(req: Request) {
 
   // CREATE User in mongodb
   if (eventType === "user.created") {
-    console.log("user.created");
-
     const { id, email_addresses, image_url, first_name, last_name } =
       evt.data;
 
@@ -88,35 +86,29 @@ export async function POST(req: Request) {
     const { id, email_addresses, image_url, first_name, last_name } =
       evt.data;
 
-    console.log("user.updated", id);
     if (id) {
       const clerkUser = await clerkClient.users.getUser(id);
       const clerkUserId = clerkUser.publicMetadata.userId as string;
-      console.log("user.clerkUserId", clerkUserId);
       const user: any = {
         email: email_addresses[0].email_address,
         name: `${first_name} ${last_name}`,
         profilePicture: image_url,
       };
-      console.log("updateUser(clerkUserId, user)", clerkUserId);
       const updatedUser = await updateUser(clerkUserId, user);
-      console.log("sssssssssssssss)", updatedUser);
       return NextResponse.json({ message: "User profile updated", user: updatedUser });
     }
     await dbConnect();
     return NextResponse.json({ message: "Action not match" });
   }
-  if (eventType === "user.deleted") {
-    console.log("user.deleted");
-    const { id } = evt.data;
 
-    console.log("user.userId, userId", id);
+  if (eventType === "user.deleted") {
+    const { id } =
+      evt.data;
+
     if (id) {
       const clerkUser = await clerkClient.users.getUser(id);
       const clerkUserId = clerkUser.publicMetadata.userId as string;
-      console.log(clerkUserId, "--------clerkUserId");
       await permanentlyDeleteUser(clerkUserId);
-      console.log(clerkUserId, "--------00000000000");
       return NextResponse.json({ message: "User account deleted" });
     }
     await dbConnect();
