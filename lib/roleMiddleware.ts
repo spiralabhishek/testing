@@ -14,7 +14,7 @@ export function withRoles(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const user = await clerkClient().users.getUser(userId);
+    const user = await clerkClient.users.getUser(userId);
     const userRole = user.publicMetadata.role as string;
 
     if (!allowedRoles.includes(userRole)) {

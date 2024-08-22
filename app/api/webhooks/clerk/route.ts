@@ -72,7 +72,7 @@ export async function POST(req: Request) {
     const newUser = await createUser(user);
 
     if (newUser) {
-      await clerkClient().users.updateUserMetadata(id, {
+      await clerkClient.users.updateUserMetadata(id, {
         publicMetadata: {
           userId: newUser._id,
           role: UserType.Admin
@@ -89,7 +89,7 @@ export async function POST(req: Request) {
     console.log(email_addresses, image_url, first_name, last_name);
     const { userId } = auth();
     if (userId) {
-      const clerkUser = await clerkClient().users.getUser(userId);
+      const clerkUser = await clerkClient.users.getUser(userId);
       const clerkUserId = clerkUser.publicMetadata.userId as string;
       const user: any = {
         email: email_addresses[0].email_address,
@@ -105,7 +105,7 @@ export async function POST(req: Request) {
   if (eventType === "user.deleted") {
     const { userId } = auth();
     if (userId) {
-      const clerkUser = await clerkClient().users.getUser(userId);
+      const clerkUser = await clerkClient.users.getUser(userId);
       const clerkUserId = clerkUser.publicMetadata.userId as string;
       await permanentlyDeleteUser(clerkUserId);
       return NextResponse.json({ message: "User account deleted" });
