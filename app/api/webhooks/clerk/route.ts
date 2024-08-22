@@ -1,8 +1,8 @@
-import { clerkClient, WebhookEvent } from "@clerk/nextjs/server";
+import { auth, clerkClient, WebhookEvent } from "@clerk/nextjs/server";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 import { Webhook } from "svix";
-import { createUser } from "../../users/repository";
+import { createUser, permanentlyDeleteUser, updateUser } from "../../users/repository";
 import { UserType } from "@/lib/types/common";
 import dbConnect from "@/lib/mongodb";
 
@@ -58,38 +58,62 @@ export async function POST(req: Request) {
 
   // CREATE User in mongodb
   if (eventType === "user.created") {
-    const { id, email_addresses, image_url, first_name, last_name, username } =
+    const { id, email_addresses, image_url, first_name, last_name } =
       evt.data;
-
-    console.log(evt.data);
 
     const user: any = {
       type: UserType.Admin,
       email: email_addresses[0].email_address,
       name: `${first_name} ${last_name}`,
       profilePicture: image_url,
-      password: "93rd398fn",
-      phone: "74734783478"
     };
 
-    console.log(user);
     await dbConnect();
     const newUser = await createUser(user);
 
     if (newUser) {
-      await clerkClient.users.updateUserMetadata(id, {
+      await clerkClient().users.updateUserMetadata(id, {
         publicMetadata: {
           userId: newUser._id,
-          publicMetadata: { role: UserType.Admin },
+          role: UserType.Admin
         },
       });
     }
 
     return NextResponse.json({ message: "New user created", user: newUser });
   }
+  if (eventType === "user.updated") {
+    const { email_addresses, image_url, first_name, last_name } =
+      evt.data;
 
+    console.log(email_addresses, image_url, first_name, last_name);
+    const { userId } = auth();
+    if (userId) {
+      const clerkUser = await clerkClient().users.getUser(userId);
+      const clerkUserId = clerkUser.publicMetadata.userId as string;
+      const user: any = {
+        email: email_addresses[0].email_address,
+        name: `${first_name} ${last_name}`,
+        profilePicture: image_url,
+      };
+      const updatedUser = await updateUser(clerkUserId, user);
+      return NextResponse.json({ message: "User profile updated", user: updatedUser });
+    }
+    await dbConnect();
+    return NextResponse.json({ message: "Action not match" });
+  }
+  if (eventType === "user.deleted") {
+    const { userId } = auth();
+    if (userId) {
+      const clerkUser = await clerkClient().users.getUser(userId);
+      const clerkUserId = clerkUser.publicMetadata.userId as string;
+      await permanentlyDeleteUser(clerkUserId);
+      return NextResponse.json({ message: "User account deleted" });
+    }
+    await dbConnect();
+    return NextResponse.json({ message: "Action not match" });
+  }
   console.log(`Webhook with and ID of ${id} and type of ${eventType}`);
   console.log("Webhook body:", body);
-
   return new Response("", { status: 200 });
 }

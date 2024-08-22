@@ -4,35 +4,17 @@ import {
   getPostById,
   updatePost,
   deletePost,
-  getAllPosts,
 } from './repository';
 import dbConnect from '@/lib/mongodb';
-import { auth, clerkClient } from '@clerk/nextjs/server';
 import { createApiResponse } from '@/lib/types/api';
 import { getPosts } from './services';
+import { checkUserRole } from '@/lib/auth';
 
 await dbConnect();
 
-// Middleware for authentication and role checking
-async function checkAuthorization() {
-  const { userId } = auth();
-  if (!userId) {
-    throw new Error('Unauthorized');
-  }
-
-  // Get the role of the current user
-  const user = await clerkClient.users.getUser(userId);
-  const userRole = user.publicMetadata.role as string;
-
-  return { userId, userRole };
-}
-
 export async function POST(req: NextRequest) {
   try {
-    const { userRole } = await checkAuthorization();
-    if (userRole !== 'admin' && userRole !== 'professional') {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
-    }
+    await checkUserRole(["Admin", "Customer"]);
     const body = await req.json();
     const post = await createPost(body);
     return NextResponse.json(post, { status: 201 });
@@ -63,38 +45,14 @@ export async function GET(req: NextRequest) {
   }
 }
 
-// export async function GET(req: NextRequest) {
-//   const id = req.nextUrl.searchParams.get('id');
-//   try {
-//     if (id) {
-//       const post = await getPostById(id as string);
-//       if (!post) {
-//         return NextResponse.json({ error: 'Post not found' }, { status: 404 });
-//       }
-//       return NextResponse.json(post);
-//     } else {
-//       const post = await getAllPosts();
-//       return NextResponse.json(post);
-//     }
-//   } catch (error: unknown) {
-//     if (error instanceof Error) {
-//       return NextResponse.json({ error: error.message }, { status: 400 });
-//     }
-//     return NextResponse.json({ error: 'Unknown error occurred' }, { status: 400 });
-//   }
-// }
-
 export async function PUT(req: NextRequest) {
   const id = req.nextUrl.searchParams.get('id');
   try {
-    const { userId, userRole } = await checkAuthorization();
+    await checkUserRole(["Admin", "Customer"]);
     const body = await req.json();
     const post = await getPostById(id as string);
     if (!post) {
       return NextResponse.json({ error: 'Post not found' }, { status: 404 });
-    }
-    if (userRole !== 'admin' && post.postedBy !== userId) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
     const updatedPost = await updatePost(id as string, body);
     return NextResponse.json(updatedPost);
@@ -109,16 +67,11 @@ export async function PUT(req: NextRequest) {
 export async function DELETE(req: NextRequest) {
   const id = req.nextUrl.searchParams.get('id');
   try {
-    const { userId, userRole } = await checkAuthorization();
-
+    await checkUserRole(["Admin", "Customer"]);
     const post = await getPostById(id as string);
     if (!post) {
       return NextResponse.json({ error: 'Post not found' }, { status: 404 });
     }
-    if (userRole !== 'admin' && post.postedBy !== userId) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
-    }
-
     const deletedPost = await deletePost(id as string);
     return NextResponse.json({ message: 'Post deleted successfully', deletedPost });
   } catch (error: unknown) {

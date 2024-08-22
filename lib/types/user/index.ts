@@ -6,9 +6,8 @@ export interface BaseUser extends Document {
     type: UserType;
     name: string;
     profilePicture?: string;
-    phone: string;
+    phone?: string;
     email: string;
-    password: string;
     bio?: string;
     isDeleted?: boolean;
     inquiries?: mongoose.Types.ObjectId[];

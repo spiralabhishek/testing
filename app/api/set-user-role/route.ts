@@ -15,7 +15,7 @@ export async function POST(req: Request) {
    return NextResponse.json({ error: 'Invalid role' }, { status: 400 });
   }
 
-  await clerkClient.users.updateUser(userId, {
+  await clerkClient().users.updateUser(userId, {
    publicMetadata: { role },
   });
 
