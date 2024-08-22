@@ -108,6 +108,7 @@ export async function POST(req: Request) {
     console.log("user.deleted");
 
     const { userId } = auth();
+    console.log("user.userId, userId", userId);
     if (userId) {
       const clerkUser = await clerkClient.users.getUser(userId);
       const clerkUserId = clerkUser.publicMetadata.userId as string;
