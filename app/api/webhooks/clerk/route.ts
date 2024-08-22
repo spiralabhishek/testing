@@ -111,7 +111,9 @@ export async function POST(req: Request) {
     if (userId) {
       const clerkUser = await clerkClient.users.getUser(userId);
       const clerkUserId = clerkUser.publicMetadata.userId as string;
+      console.log(clerkUserId, "--------clerkUserId");
       await permanentlyDeleteUser(clerkUserId);
+      console.log(clerkUserId, "--------00000000000");
       return NextResponse.json({ message: "User account deleted" });
     }
     await dbConnect();
