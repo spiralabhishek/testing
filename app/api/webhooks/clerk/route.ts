@@ -88,17 +88,20 @@ export async function POST(req: Request) {
     const { email_addresses, image_url, first_name, last_name } =
       evt.data;
 
-    console.log("user.updated");
     const { userId } = auth();
+    console.log("user.updated", userId);
     if (userId) {
       const clerkUser = await clerkClient.users.getUser(userId);
       const clerkUserId = clerkUser.publicMetadata.userId as string;
+      console.log("user.clerkUserId", clerkUserId);
       const user: any = {
         email: email_addresses[0].email_address,
         name: `${first_name} ${last_name}`,
         profilePicture: image_url,
       };
+      console.log("updateUser(clerkUserId, user)", clerkUserId);
       const updatedUser = await updateUser(clerkUserId, user);
+      console.log("sssssssssssssss)", updatedUser);
       return NextResponse.json({ message: "User profile updated", user: updatedUser });
     }
     await dbConnect();
