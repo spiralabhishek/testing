@@ -4,6 +4,7 @@ import { Availability, Banner, FAQ, PriceList, SocialMedia, Subscription, Theme,
 export interface BaseUser extends Document {
     _id: mongoose.Types.ObjectId;
     type: UserType;
+    clerkId: string;
     name: string;
     profilePicture?: string;
     phone?: string;

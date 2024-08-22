@@ -17,7 +17,6 @@ export default authMiddleware({
     "/api/boards",
     "/api/categories"
   ],
-  
 });
 
 export const config = {

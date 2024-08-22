@@ -1,8 +1,8 @@
-import { auth, clerkClient, WebhookEvent } from "@clerk/nextjs/server";
+import { clerkClient, WebhookEvent } from "@clerk/nextjs/server";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 import { Webhook } from "svix";
-import { createUser, permanentlyDeleteUser, updateUser } from "../../users/repository";
+import { createUser, deleteUser, updateUser } from "../../users/repository";
 import { UserType } from "@/lib/types/common";
 import dbConnect from "@/lib/mongodb";
 
@@ -62,6 +62,7 @@ export async function POST(req: Request) {
       evt.data;
 
     const user: any = {
+      clerkId: id,
       type: UserType.Admin,
       email: email_addresses[0].email_address,
       name: `${first_name} ${last_name}`,
@@ -82,38 +83,34 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ message: "New user created", user: newUser });
   }
+
+  // update user by clerk
   if (eventType === "user.updated") {
     const { id, email_addresses, image_url, first_name, last_name } =
       evt.data;
-
-    if (id) {
-      const clerkUser = await clerkClient.users.getUser(id);
-      const clerkUserId = clerkUser.publicMetadata.userId as string;
-      const user: any = {
-        email: email_addresses[0].email_address,
-        name: `${first_name} ${last_name}`,
-        profilePicture: image_url,
-      };
-      const updatedUser = await updateUser(clerkUserId, user);
-      return NextResponse.json({ message: "User profile updated", user: updatedUser });
-    }
     await dbConnect();
-    return NextResponse.json({ message: "Action not match" });
+
+    const user: any = {
+      email: email_addresses[0].email_address,
+      name: `${first_name} ${last_name}`,
+      profilePicture: image_url,
+    };
+
+    const updatedUser = await updateUser(id, user);
+    return NextResponse.json({ message: "User profile updated", user: updatedUser });
   }
 
+  // delete user by clerk
   if (eventType === "user.deleted") {
-    const { id } =
-      evt.data;
+    const { id } = evt.data;
+    await dbConnect();
 
     if (id) {
-      const clerkUser = await clerkClient.users.getUser(id);
-      const clerkUserId = clerkUser.publicMetadata.userId as string;
-      await permanentlyDeleteUser(clerkUserId);
+      await deleteUser(id);
       return NextResponse.json({ message: "User account deleted" });
     }
-    await dbConnect();
-    return NextResponse.json({ message: "Action not match" });
   }
+
   console.log(`Webhook with and ID of ${id} and type of ${eventType}`);
   console.log("Webhook body:", body);
   return new Response("", { status: 200 });

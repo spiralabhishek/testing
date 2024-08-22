@@ -31,6 +31,7 @@ const LocationSchema = new Schema<ILocation>({
 
 const BaseUserSchema = new Schema(
   {
+    clerkId: { type: String, required: true },
     type: { type: String, required: true, enum: Object.values(UserType) },
     name: { type: String, required: true },
     profilePicture: { type: String },
