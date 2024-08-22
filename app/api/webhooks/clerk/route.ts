@@ -85,13 +85,12 @@ export async function POST(req: Request) {
     return NextResponse.json({ message: "New user created", user: newUser });
   }
   if (eventType === "user.updated") {
-    const { email_addresses, image_url, first_name, last_name } =
+    const { id, email_addresses, image_url, first_name, last_name } =
       evt.data;
 
-    const { userId } = auth();
-    console.log("user.updated", userId);
-    if (userId) {
-      const clerkUser = await clerkClient.users.getUser(userId);
+    console.log("user.updated", id);
+    if (id) {
+      const clerkUser = await clerkClient.users.getUser(id);
       const clerkUserId = clerkUser.publicMetadata.userId as string;
       console.log("user.clerkUserId", clerkUserId);
       const user: any = {
@@ -109,11 +108,11 @@ export async function POST(req: Request) {
   }
   if (eventType === "user.deleted") {
     console.log("user.deleted");
+    const { id } = evt.data;
 
-    const { userId } = auth();
-    console.log("user.userId, userId", userId);
-    if (userId) {
-      const clerkUser = await clerkClient.users.getUser(userId);
+    console.log("user.userId, userId", id);
+    if (id) {
+      const clerkUser = await clerkClient.users.getUser(id);
       const clerkUserId = clerkUser.publicMetadata.userId as string;
       console.log(clerkUserId, "--------clerkUserId");
       await permanentlyDeleteUser(clerkUserId);
