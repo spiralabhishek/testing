@@ -9,6 +9,7 @@ export default authMiddleware({
     "/api/webhooks/clerk",
     "/api/posts",
     "/posts",
+    "/posts/(*)",
     "/api/users",
     "/api/teammembers",
     "/api/statistics",
