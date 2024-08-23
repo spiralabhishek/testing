@@ -32,6 +32,7 @@ export async function GET(req: NextRequest) {
     req.nextUrl.searchParams.entries()
   );
   try {
+    await checkUserRole(["Admin", "Customer"]);
     const filters = await getPosts(params);
     const response = createApiResponse(true, filters);
     return NextResponse.json(response);

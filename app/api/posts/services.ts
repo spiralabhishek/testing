@@ -29,6 +29,7 @@ export const getPosts = async (
     filters: PostQueryFilters & { page?: number; limit?: number }
 ): Promise<PaginatedPostsResponse> => {
     const query = buildQueryFromFilters(filters);
+    
     let posts: BasePost | BasePost[] | null;
 
     const page = filters.page || 1;

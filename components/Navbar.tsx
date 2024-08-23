@@ -11,9 +11,12 @@ const Navbar = async () => {
   return (
     <div>
       <ul className="flex justify-between m-10 item-center">
-        <div>
+        <div className="flex gap-10">
           <Link href="/">
             <li>Home</li>
+          </Link>
+          <Link href="/posts">
+            <li>Posts</li>
           </Link>
         </div>
         <div className="flex gap-10">

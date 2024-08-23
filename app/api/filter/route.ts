@@ -62,8 +62,6 @@ export async function GET(req: NextRequest) {
     const skip = ((filter.page ?? 1) - 1) * (filter.limit ?? 10);
     const limit = filter.limit ?? 10;
 
-    console.log(filter.options, skip, limit);
-
     let response;
     if (filter.entity === "User") {
       response = await UserModel.find(filter.options).skip(skip).limit(limit);
