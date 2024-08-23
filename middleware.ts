@@ -9,7 +9,7 @@ export default authMiddleware({
     "/api/webhooks/clerk",
     "/api/posts",
     "/posts",
-    "/posts/(*)",
+    "/posts/(.*)",
     "/api/users",
     "/api/teammembers",
     "/api/statistics",
@@ -22,5 +22,10 @@ export default authMiddleware({
 });
 
 export const config = {
-  matcher: ["/((?!.+\\.[\\w]+$|_next).*)", "/", "/(api|trpc)(.*)"],
+  matcher: [
+    "/((?!.+\\.[\\w]+$|_next).*)",
+    "/",
+    "/(api|trpc)(.*)",
+    "/posts", // add this line to make all /posts routes public
+  ],
 };
