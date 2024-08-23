@@ -18,7 +18,7 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider>
-      <html lang="en">
+      <html lang="Hebrew">
         <body className={inter.className}>
           <div className="mx-36 text-2xl">
             <ClerkLoading>
