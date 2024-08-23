@@ -8,6 +8,7 @@ export default authMiddleware({
     "/dashboard",
     "/api/webhooks/clerk",
     "/api/posts",
+    "/posts",
     "/api/users",
     "/api/teammembers",
     "/api/statistics",
