@@ -25,7 +25,6 @@ export const config = {
   matcher: [
     "/((?!.+\\.[\\w]+$|_next).*)",
     "/",
-    "/(api|trpc)(.*)",
-    "/posts", // add this line to make all /posts routes public
+    "/(api|trpc)(.*)"
   ],
 };
