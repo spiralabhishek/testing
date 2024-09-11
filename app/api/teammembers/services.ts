@@ -26,7 +26,7 @@ export const getTeamMembers = async (
   filters: TeamMemberQueryFilters & { page?: number; limit?: number }
 ): Promise<PaginatedTeamMembersResponse> => {
   const query = buildQueryFromFilters(filters);
-  let teamMembers: TeamMember | TeamMember[] | null;
+  let teamMembers: TeamMember | TeamMember[] | any;
 
   const page = filters.page || 1;
   const limit = filters.limit || 10;

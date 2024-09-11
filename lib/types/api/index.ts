@@ -1,26 +1,32 @@
 // /lib/api-response.ts
 
 export type ApiResponse<T = unknown> = {
-    success: boolean;
-    data?: T;
-    error?: {
-      code: string;
-      message: string;
-    };
-    meta?: {
-      page?: number;
-      limit?: number;
-      total?: number;
-    };
+  success: boolean;
+  data?: T;
+  error?: {
+    code: string;
+    message: string;
   };
-  
-  
-  export function createApiResponse<T>(
-    success: boolean,
-    data?: T,
-    error?: { code: string; message: string },
-    meta?: ApiResponse['meta']
-  ): ApiResponse<T> {
-    return { success, data, error, meta };
-  }
-  
+  meta?: {
+    page?: number;
+    limit?: number;
+    total?: number;
+  };
+};
+
+
+export function createApiResponse<T>(
+  success: boolean,
+  data?: T,
+  error?: { code: string; message: string },
+  meta?: ApiResponse['meta']
+): ApiResponse<T> {
+  return { success, data, error, meta };
+}
+
+export interface ApiConfig {
+  endpoint: string;
+  method?: 'GET' | 'POST' | 'PUT' | 'DELETE';
+  data?: any;
+  requiresAuth?: boolean;
+}

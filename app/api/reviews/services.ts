@@ -30,7 +30,7 @@ export const getReviews = async (
   filters: ReviewQueryFilters & { page?: number; limit?: number }
 ): Promise<PaginatedReviewsResponse> => {
   const query = buildQueryFromFilters(filters);
-  let reviews: Review | Review[] | null;
+  let reviews: Review | Review[] | any;
 
   const page = filters.page || 1;
   const limit = filters.limit || 10;
@@ -49,32 +49,32 @@ export const getReviews = async (
       pages: Math.ceil(total / limit),
     },
   };
-
-  // Creating a query object from the filters
-  function buildQueryFromFilters(
-    params: ReviewQueryFilters
-  ): Record<string, any> {
-    const filters: ReviewQueryFilters = {};
-    if (params._id) {
-      if (isValidObjectId(params._id))
-        filters._id = new mongoose.Types.ObjectId(params._id);
-    }
-    if (params.rating) filters.rating = params.rating as number;
-    if (params.comment) filters.comment = params.comment as string;
-    if (params.confirmed) filters.confirmed = params.confirmed + "" === "true";
-    if (params.createdAt)
-      filters.createdAt = {
-        $gte: params.createdAt as Date,
-      };
-
-    if (params.professional && isValidObjectId(params.professional))
-      filters.professional = new mongoose.Types.ObjectId(
-        params.professional
-      ) as mongoose.Types.ObjectId;
-    if (params.customer && isValidObjectId(params.customer))
-      filters.customer = new mongoose.Types.ObjectId(
-        params.customer
-      ) as mongoose.Types.ObjectId;
-    return filters;
-  }
 };
+
+// Creating a query object from the filters
+export function buildQueryFromFilters(
+  params: ReviewQueryFilters
+): Record<string, any> {
+  const filters: ReviewQueryFilters = {};
+  if (params._id) {
+    if (isValidObjectId(params._id))
+      filters._id = new mongoose.Types.ObjectId(params._id);
+  }
+  if (params.rating) filters.rating = params.rating as number;
+  if (params.comment) filters.comment = params.comment as string;
+  if (params.confirmed) filters.confirmed = params.confirmed + "" === "true";
+  if (params.createdAt)
+    filters.createdAt = {
+      $gte: params.createdAt as Date,
+    };
+
+  if (params.professional && isValidObjectId(params.professional))
+    filters.professional = new mongoose.Types.ObjectId(
+      params.professional
+    ) as mongoose.Types.ObjectId;
+  if (params.customer && isValidObjectId(params.customer))
+    filters.customer = new mongoose.Types.ObjectId(
+      params.customer
+    ) as mongoose.Types.ObjectId;
+  return filters;
+}

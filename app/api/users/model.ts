@@ -24,7 +24,7 @@ const LocationSchema = new Schema<ILocation>({
   address: { type: String },
   remote: { type: Boolean },
   radiusKm: { type: Number },
-  coordinates: { type: [Number] },
+  coordinates: { type: [Number], index: '2dsphere' },
   country: { type: String },
   zip: { type: Number },
 });
@@ -74,6 +74,7 @@ const PriceListSchema = new Schema<PriceList>({
 
 const FAQSchema = new Schema<FAQ>({
   answer: { type: String },
+  isDeleted: { type: Boolean },
   question: { type: String },
 });
 

@@ -25,7 +25,7 @@ export const getBoards = async (
   filters: BoardQueryFilters & { page?: number; limit?: number }
 ): Promise<PaginatedBoardsResponse> => {
   const query = buildQueryFromFilters(filters);
-  let boards: Board | Board[] | null;
+  let boards: Board | Board[] | any;
 
   const page = filters.page || 1;
   const limit = filters.limit || 10;

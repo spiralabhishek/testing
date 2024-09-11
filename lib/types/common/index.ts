@@ -14,7 +14,9 @@ export interface PriceList {
 }
 
 export interface FAQ {
+    _id?: any;
     question: string;
+    isDeleted?: boolean;
     answer: string;
 }
 
@@ -61,6 +63,11 @@ export interface ILocation {
     coordinates: [number, number];
 }
 
+export interface GeoQueryParams {
+    longitude?: number;
+    latitude?: number;
+    radiusKm?: number;
+}
 
 export interface Media {
     images: string[];

@@ -32,7 +32,7 @@ const LocationSchema = new Schema<ILocation>({
   remote: { type: Boolean },
   radiusKm: { type: Number },
   zip: { type: Number },
-  coordinates: { type: [Number] }
+  coordinates: { type: [Number], index: '2dsphere' }
 });
 
 const PostModel = mongoose.models.Posts || mongoose.model<BasePost>('Posts', BasePostSchema);

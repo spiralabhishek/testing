@@ -24,7 +24,7 @@ export const getUserById = async (id: string) => {
 };
 
 export const updateUser = async (id: string, updateData: Partial<BaseUser>) => {
-  return await User.updateOne({ clerkId: id }, updateData);
+  return await User.findByIdAndUpdate(id, updateData, { new: true })
 };
 
 export const deleteUser = async (id: string) => {

@@ -16,7 +16,7 @@ export async function checkUserRole(allowedRoles: string[]) {
         if (!userData) {
             throw new Error("User not found");
         }
-        return { clerkUserId, clerkUserRole }
+        return { userId, clerkUserId, clerkUserRole }
     } else {
         throw new Error("Unauthorized");
     }

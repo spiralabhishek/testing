@@ -3,27 +3,87 @@
 @tailwind utilities;
 
 :root {
-  --foreground-rgb: 0, 0, 0;
+  box-sizing: border-box;
+  --foreground-rgb: #F5F5F5;
   --background-start-rgb: 214, 219, 220;
   --background-end-rgb: 255, 255, 255;
+  --gap: 15px;
+}
+
+@media (min-width: 1025px) {
+  :root {
+    --gap: 20px;
+  }
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
+    --background-start-rgb: #F5F5F5;
+    --background-end-rgb: #F5F5F5;
   }
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  -ms-box-sizing: border-box;
 }
 
 body {
   color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
+  /* background: linear-gradient(to bottom,
       transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+      rgb(var(--background-end-rgb))) rgb(var(--background-start-rgb)); */
+  background-color: #f5f5f5;
+}
+/* Dropdwon Css Start */
+
+.css-13cymwt-control, 
+.css-t3ipsp-control{
+  width: 122px;
+  border-radius: 30px !important;
+  height: 42px;
+  direction: rtl;
+  border: none !important;
+}
+.css-1jqq78o-placeholder{
+  color: #060606 !important;
+}
+.css-1u9des2-indicatorSeparator{
+  display: none !important;
+}
+.css-tj5bde-Svg{
+  fill: #898A90;
+}
+
+.rtl{
+  direction: rtl;
+}
+.ltr{
+  direction: ltr;
+}
+.details-page-right ul {
+  gap: 20px ;
+}
+/* .professional-inn .professional_dashboard_entry {
+  overflow-x: auto;
+} */
+input[type="time"]::-webkit-calendar-picker-indicator {
+  display: none;
+  -webkit-appearance: none;
+}
+input[type="time"]:focus {
+  outline: none;
+}
+/* Dropdwon Css End */
+
+@media  (max-width: 1299px) {
+  .custom-flex-wrap {
+    flex-wrap: wrap;
+  }
 }
 
 @layer utilities {
@@ -31,3 +91,5 @@ body {
     text-wrap: balance;
   }
 }
+
+/* https://www.figma.com/design/wdGYI2mj6FlqPAWqGigy6v/PRO-CARD-UI?node-id=1-5&t=Ey6OmbniqWRG19OC-0 */

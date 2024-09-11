@@ -32,7 +32,7 @@ export const getInquiries = async (
   filters: InquiryQueryFilters & { page?: number; limit?: number }
 ): Promise<PaginatedInquiriesResponse> => {
   const query = buildQueryFromFilters(filters);
-  let inquiries: Inquiry | Inquiry[] | null;
+  let inquiries: Inquiry | Inquiry[] | any;
 
   const page = filters.page || 1;
   const limit = filters.limit || 10;

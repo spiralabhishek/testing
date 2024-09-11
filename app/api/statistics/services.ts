@@ -23,7 +23,7 @@ export const getStatistics = async (
   filters: StatisticQueryFilters & { page?: number; limit?: number }
 ): Promise<PaginatedStatisticsResponse> => {
   const query = buildQueryFromFilters(filters);
-  let statistics: Statistic | Statistic[] | null;
+  let statistics: Statistic | Statistic[] | any;
 
   const page = filters.page || 1;
   const limit = filters.limit || 10;

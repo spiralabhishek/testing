@@ -1,12 +1,14 @@
-import mongoose, { isValidObjectId } from "mongoose";
+import mongoose, { Document, FilterQuery } from 'mongoose';
 import { BaseUser, CustomerUser, ProfessionalUser } from "@/lib/types/user";
-
 import InquiryModel from "../inquiries/model";
 import { UserType } from "@/lib/types/common";
 import UserModel from "./model";
+import dbConnect from "@/lib/mongodb";
+
+await dbConnect();
 
 export interface PaginatedUsersResponse {
-  users: BaseUser[] | BaseUser | null;
+  users: BaseUser[];
   pagination: {
     total: number;
     page: number;
@@ -16,39 +18,54 @@ export interface PaginatedUsersResponse {
 }
 
 export interface UserQueryFilters {
-  _id?: mongoose.Types.ObjectId;
+  _id?: string | mongoose.Types.ObjectId;
   type?: UserType;
   name?: string;
   phone?: string;
   email?: string;
   isDeleted?: boolean;
-  inquiries?: {
-    $in?: mongoose.Types.ObjectId[];
-  };
+  inquiries?: mongoose.Types.ObjectId[];
 }
+
+export const countProfessionalsUsersByCategory = async (
+  categoryId: mongoose.Types.ObjectId
+) => {
+  try {
+    const count = await UserModel.countDocuments({
+      type: "professional",
+      categories: { $in: [categoryId] },
+    });
+
+    return count;
+  } catch (error) {
+    console.error("Error counting users by category:", error);
+    return null;
+  }
+};
 
 export const getUsers = async (
   filters: UserQueryFilters & { page?: number; limit?: number }
 ): Promise<PaginatedUsersResponse> => {
   const query = buildQueryFromFilters(filters);
-  let users: BaseUser | BaseUser[] | null;
-
   const page = filters.page || 1;
   const limit = filters.limit || 10;
   const skip = (page - 1) * limit;
 
-  users = await UserModel.find(query)
+  const users = await UserModel.find(query)
+    .select("-password")
     .populate({
       path: "inquiries",
       model: InquiryModel,
     })
     .skip(skip)
-    .limit(limit);
+    .limit(limit)
+    .lean()
+    .exec();
 
   const total = await UserModel.countDocuments(query);
 
   return {
-    users,
+    users: users as BaseUser[],
     pagination: {
       page,
       limit,
@@ -56,43 +73,20 @@ export const getUsers = async (
       pages: Math.ceil(total / limit),
     },
   };
+};
 
-  // Creating a query object from the filters
-  function buildQueryFromFilters(
-    params: UserQueryFilters
-  ): Record<string, any> {
-    const filters: UserQueryFilters = {};
-    if (params._id)
-      if (isValidObjectId(params._id))
-        filters._id = new mongoose.Types.ObjectId(params._id);
-
-    if (params.type && params.type in UserType)
-      filters.type = params.type as UserType;
-
-    if (params.name) filters.name = params.name as string;
-
-    if (params.phone) filters.phone = params.phone as string;
-
-    if (params.email) filters.email = params.email as string;
-
-    if (params.isDeleted) filters.isDeleted = params.isDeleted as boolean;
-
-    if (
-      params.inquiries &&
-      Array.isArray(params.inquiries) &&
-      params.inquiries.length > 0
-    ) {
-      const inqIds = params.inquiries
-        .map((inqId) => {
-          if (isValidObjectId(inqId))
-            // Might not work (new mongoose.Types.ObjectId(inqId) function is deprecated, trying an alternative function)
-            return mongoose.Types.ObjectId.createFromTime(inqId);
-        })
-        .filter((id) => id !== undefined);
-
-      filters.inquiries = { $in: inqIds };
-    }
-
-    return filters;
+export const buildQueryFromFilters = (params: UserQueryFilters): FilterQuery<BaseUser> => {
+  const filters: FilterQuery<BaseUser> = {};
+  
+  if (params._id) filters._id = new mongoose.Types.ObjectId(params._id);
+  if (params.type) filters.type = params.type;
+  if (params.name) filters.name = params.name;
+  if (params.phone) filters.phone = params.phone;
+  if (params.email) filters.email = params.email;
+  if (params.isDeleted !== undefined) filters.isDeleted = params.isDeleted;
+  if (params.inquiries && params.inquiries.length > 0) {
+    filters.inquiries = { $in: params.inquiries.map(id => new mongoose.Types.ObjectId(id)) };
   }
+
+  return filters;
 };

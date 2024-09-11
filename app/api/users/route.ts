@@ -5,13 +5,13 @@ import {
   getUserById,
   updateUser,
   deleteUser,
-  permanentlyDeleteUser,
 } from "./repository";
 import dbConnect from "@/lib/mongodb";
 import { createApiResponse } from "@/lib/types/api";
 import { NextRequest, NextResponse } from "next/server";
 import { getUsers } from "./services";
 import { checkUserRole } from "@/lib/auth";
+import { auth, clerkClient } from "@clerk/nextjs/server";
 
 await dbConnect();
 
@@ -31,7 +31,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(result, { status: 201 });
   } catch (error: unknown) {
     if (error instanceof Error) {
-      return NextResponse.json({ error: error.message }, { status: 400 });
+      const response = createApiResponse(false, error.message);
+      return NextResponse.json(response, { status: 400 });
     }
     return NextResponse.json(
       { error: "Unknown error occurred" },
@@ -46,14 +47,21 @@ export async function GET(req: NextRequest) {
   );
 
   try {
-    await checkUserRole(["Admin", "Customer"])
+    const { clerkUserRole } = await checkUserRole(["Admin", "Customer"])
     const id = req.nextUrl.searchParams.get("_id");
-    const users = await getUsers(params);
-
-    const response = createApiResponse(true, users);
-
+    if (clerkUserRole === "Admin" && !id) {
+      const users = await getUsers(params);
+      const response = createApiResponse(true, users);
+      return NextResponse.json(response, { status: 200 });
+    }
+    if (clerkUserRole === "Admin" && !id) {
+      const users = await getUsers(params);
+      const response = createApiResponse(true, users);
+      return NextResponse.json(response, { status: 200 });
+    }
     if (id) {
       const user = await getUserById(id as string);
+      const response = createApiResponse(true, user);
       return NextResponse.json(response, { status: 200 });
     } else {
       return NextResponse.json(
@@ -64,26 +72,33 @@ export async function GET(req: NextRequest) {
   } catch (error: unknown) {
     // Concrete error
     if (error instanceof Error) {
-      console.error(error)
+      console.error(error);
       const response = createApiResponse(false, error.message);
       return NextResponse.json(response, { status: 400 });
     }
     // Unknown error
-    const response = createApiResponse(false, "Unknown error occurred")
+    const response = createApiResponse(false, "Unknown error occurred");
     return NextResponse.json(response, { status: 400 });
   }
 }
 
 export async function PUT(req: NextRequest) {
   try {
-    await checkUserRole(["Admin", "Customer"])
+    const { userId, clerkUserId } = await checkUserRole(["Admin", "Customer"]);
     const updateData = await req.json();
-    const id = req.nextUrl.searchParams.get("id");
-    const user = await updateUser(id as string, updateData);
-    return NextResponse.json(user, { status: 200 });
+    const userData = await updateUser(clerkUserId as string, updateData);
+    if (userData) {
+      await clerkClient.users.updateUser(userId as string, {
+        firstName: updateData?.name?.split(" ")[0],
+        lastName: updateData.name?.split(" ")[1],
+      });
+    }
+
+    return NextResponse.json(userData, { status: 200 });
   } catch (error: unknown) {
     if (error instanceof Error) {
-      return NextResponse.json({ error: error.message }, { status: 400 });
+      const response = createApiResponse(false, error.message);
+      return NextResponse.json(response, { status: 400 });
     }
     return NextResponse.json(
       { error: "Unknown error occurred" },
@@ -92,22 +107,17 @@ export async function PUT(req: NextRequest) {
   }
 }
 
-export async function DELETE(req: NextRequest) {
+export async function DELETE() {
   try {
-    await checkUserRole(["Admin", "Customer"])
-    const id = req.nextUrl.searchParams.get("id");
-    const permanent = req.nextUrl.searchParams.get("permanent");
-    let user;
-    if (permanent === "true") {
-      user = await permanentlyDeleteUser(id as string);
-    } else {
-      user = await deleteUser(id as string);
-    }
+    const { userId, clerkUserId } = await checkUserRole(["Admin", "Customer"]);
+    const user = await deleteUser(clerkUserId as string);
+    await clerkClient.users.deleteUser(userId as string);
+
     return NextResponse.json(user, { status: 200 });
   } catch (error: unknown) {
     if (error instanceof Error) {
-      console.error(error);
-      return NextResponse.json({ error: error.message }, { status: 400 });
+      const response = createApiResponse(false, error.message);
+      return NextResponse.json(response, { status: 400 });
     }
     console.error(error);
     return NextResponse.json(

@@ -63,7 +63,7 @@ export async function POST(req: Request) {
 
     const user: any = {
       clerkId: id,
-      type: UserType.Admin,
+      type: UserType.Professional,
       email: email_addresses[0].email_address,
       name: `${first_name} ${last_name}`,
       profilePicture: image_url,
@@ -76,7 +76,7 @@ export async function POST(req: Request) {
       await clerkClient.users.updateUserMetadata(id, {
         publicMetadata: {
           userId: newUser._id,
-          role: UserType.Admin
+          role: UserType.Professional
         },
       });
     }

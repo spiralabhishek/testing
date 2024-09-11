@@ -25,7 +25,7 @@ export const getOptions = async (
   filters: OptionQueryFilters & { page?: number; limit?: number }
 ): Promise<PaginatedOptionsResponse> => {
   const query = buildQueryFromFilters(filters);
-  let options: Option | Option[] | null;
+  let options: Option | Option[] | any;
 
   const page = filters.page || 1;
   const limit = filters.limit || 10;
