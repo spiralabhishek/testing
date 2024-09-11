@@ -47,7 +47,7 @@ export async function GET(req: NextRequest) {
   );
 
   try {
-    const { clerkUserRole } = await checkUserRole(["Admin", "Customer"])
+    const { clerkUserRole } = await checkUserRole(["Admin", "Professional"])
     const id = req.nextUrl.searchParams.get("_id");
     if (clerkUserRole === "Admin" && !id) {
       const users = await getUsers(params);
@@ -84,7 +84,7 @@ export async function GET(req: NextRequest) {
 
 export async function PUT(req: NextRequest) {
   try {
-    const { userId, clerkUserId } = await checkUserRole(["Admin", "Customer"]);
+    const { userId, clerkUserId } = await checkUserRole(["Admin", "Professional"]);
     const updateData = await req.json();
     const userData = await updateUser(clerkUserId as string, updateData);
     if (userData) {
@@ -109,7 +109,7 @@ export async function PUT(req: NextRequest) {
 
 export async function DELETE() {
   try {
-    const { userId, clerkUserId } = await checkUserRole(["Admin", "Customer"]);
+    const { userId, clerkUserId } = await checkUserRole(["Admin", "Professional"]);
     const user = await deleteUser(clerkUserId as string);
     await clerkClient.users.deleteUser(userId as string);
 

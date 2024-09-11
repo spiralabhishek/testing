@@ -16,7 +16,7 @@ await dbConnect();
 
 export async function POST(req: NextRequest) {
   try {
-    // await checkUserRole(["Admin", "Customer"]);
+    // await checkUserRole(["Admin", "Professional"]);
     const body = await req.json();
     const post = await createPost(body);
     return NextResponse.json(post, { status: 201 });
@@ -61,7 +61,7 @@ export async function GET(req: NextRequest) {
 export async function PUT(req: NextRequest) {
   const id = req.nextUrl.searchParams.get('id');
   try {
-    const { clerkUserId, clerkUserRole } = await checkUserRole(["Admin", "Customer"]);
+    const { clerkUserId, clerkUserRole } = await checkUserRole(["Admin", "Professional"]);
     const checkUserPost = await PostModel.exists({ _id: id, postedBy: clerkUserId })
     if (checkUserPost || clerkUserRole === "Admin") {
       const body = await req.json();
@@ -90,7 +90,7 @@ export async function PUT(req: NextRequest) {
 export async function DELETE(req: NextRequest) {
   const id = req.nextUrl.searchParams.get('id');
   try {
-    const { clerkUserId, clerkUserRole } = await checkUserRole(["Admin", "Customer"]);
+    const { clerkUserId, clerkUserRole } = await checkUserRole(["Admin", "Professional"]);
     const checkUserPost = await PostModel.exists({ _id: id, postedBy: clerkUserId })
     if (checkUserPost || clerkUserRole === "Admin") {
       const post = await getPostById(id as string);

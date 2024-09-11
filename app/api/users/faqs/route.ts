@@ -11,7 +11,7 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     console.log("-------------------", body);
-    const { clerkUserId } = await checkUserRole(["Admin", "Customer"]);
+    const { clerkUserId } = await checkUserRole(["Admin", "Professional"]);
     const { question, answer } = body;
 
     const result = await updateUserFAQ(clerkUserId, { question, answer });
@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
 }
 
 export async function GET(req: NextRequest) {
-  const { clerkUserId } = await checkUserRole(["Admin", "Customer"]);
+  const { clerkUserId } = await checkUserRole(["Admin", "Professional"]);
 
   try {
     const faqs = await getUserFAQs(clerkUserId as string);
