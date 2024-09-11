@@ -74,7 +74,7 @@ const PriceListSchema = new Schema<PriceList>({
 
 const FAQSchema = new Schema<FAQ>({
   answer: { type: String },
-  isDeleted: { type: Boolean },
+  isDeleted: { type: Boolean, default: false },
   question: { type: String },
 });
 
