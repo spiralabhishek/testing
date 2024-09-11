@@ -1,6 +1,6 @@
 import mongoose, { Mongoose } from "mongoose";
 
-const MONGODB_URL = 'mongodb://localhost:27017' as string;
+const MONGODB_URL = process.env.MONGODB_URI as string;
 
 interface MongooseConn {
     conn: Mongoose | null;
@@ -22,7 +22,7 @@ async function dbConnect() {
     cached.promise =
         cached.promise ||
         mongoose.connect(MONGODB_URL, {
-            dbName: "pro-card",
+            dbName: "test-card",
             bufferCommands: false,
             connectTimeoutMS: 30000,
         });
