@@ -35,7 +35,7 @@ const BaseUserSchema = new Schema(
     type: { type: String, required: true, enum: Object.values(UserType) },
     name: { type: String, required: true },
     profilePicture: { type: String },
-    phone: { type: String, unique: true },
+    phone: { type: String },
     email: { type: String, required: true, unique: true },
     bio: { type: String },
     Location: { type: LocationSchema },
