@@ -72,10 +72,11 @@ export async function POST(req: Request) {
       profilePicture: image_url,
       phone: Math.random().toString().slice(2, 11)
     };
-    console.log("newUser", user);
+    console.log("user", user);
 
     await dbConnect();
     const newUser = await createUser(user);
+    console.log("newUser", newUser);
 
     if (newUser) {
       await clerkClient.users.updateUserMetadata(id, {
