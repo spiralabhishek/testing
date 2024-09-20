@@ -6,6 +6,7 @@ import { createUser, deleteUser, updateUser } from "../../users/repository";
 import { UserType } from "@/lib/types/common";
 import dbConnect from "@/lib/mongodb";
 
+
 export async function POST(req: Request) {
   // You can find this in the Clerk Dashboard -> Webhooks -> choose the webhook
   const WEBHOOK_SECRET = process.env.WEBHOOK_SECRET;
