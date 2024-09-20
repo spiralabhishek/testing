@@ -70,6 +70,7 @@ export async function POST(req: Request) {
       profilePicture: image_url,
       phone: Math.random().toString().slice(2, 11)
     };
+    console.log("newUser", user);
 
     await dbConnect();
     const newUser = await createUser(user);
@@ -82,7 +83,6 @@ export async function POST(req: Request) {
         },
       });
     }
-    console.log("newUser", newUser);
 
     return NextResponse.json({ message: "New user created", user: newUser });
   }
