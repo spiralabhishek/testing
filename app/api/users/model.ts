@@ -109,7 +109,7 @@ export const Professional =
     "Professional",
     new Schema({
       coverPhoto: { type: String },
-      vat: { type: String, unique: true },
+      vat: { type: String },
       skills: [String],
       languages: [String],
       verified: { type: Boolean },
