@@ -8,7 +8,7 @@ import dbConnect from "@/lib/mongodb";
 
 export async function POST(req: Request) {
   // You can find this in the Clerk Dashboard -> Webhooks -> choose the webhook
-  const WEBHOOK_SECRET = "whsec_t117pfKL+dk4IKDB65nLm2MrUt1wz0/k";
+  const WEBHOOK_SECRET = process.env.WEBHOOK_SECRET;
 
   if (!WEBHOOK_SECRET) {
     throw new Error(
